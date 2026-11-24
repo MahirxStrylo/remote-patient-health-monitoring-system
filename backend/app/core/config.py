@@ -53,9 +53,14 @@ class Settings(BaseSettings):
             return f"sqlite+aiosqlite:///{abs_path}"
         # Cloud providers (Render, Heroku, Neon, Supabase) often provide postgres:// or postgresql://
         if url.startswith("postgres://"):
-            return "postgresql+asyncpg://" + url[len("postgres://"):]
-        if url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
-            return "postgresql+asyncpg://" + url[len("postgresql://"):]
+            url = "postgresql+asyncpg://" + url[len("postgres://"):]
+        elif url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
+            url = "postgresql+asyncpg://" + url[len("postgresql://"):]
+
+        if "postgresql+asyncpg://" in url:
+            import re
+            url = url.replace("sslmode=", "ssl=")
+            url = re.sub(r"[?&]channel_binding=[^&]+", "", url)
         return url
 
     # ------------------------------------------------------------------ #
