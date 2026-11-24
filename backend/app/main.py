@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.logging import configure_logging, get_logger
-from app.database.session import init_db
+from app.database.session import init_db, bootstrap_admin
 
 # Configure structured JSON logging
 configure_logging()
@@ -34,6 +34,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Initializing database schemas...")
     await init_db()
     logger.info("Database initialization complete.")
+    logger.info("Bootstrapping administrator account if not present...")
+    await bootstrap_admin()
     logger.info(
         "Remote Health Monitoring Server v%s ready on port 8000.", settings.APP_VERSION
     )

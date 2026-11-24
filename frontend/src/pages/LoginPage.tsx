@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   const fillDemoCredentials = () => {
     setUsername('admin');
-    setPassword('admin123');
+    setPassword('admin1029');
     setError('');
   };
 
@@ -132,7 +132,7 @@ export default function LoginPage() {
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-charcoal-800 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-charcoal-700 transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              Fill `admin` / `admin123`
+              Fill `admin` / `admin1029`
             </button>
           </div>
         </div>

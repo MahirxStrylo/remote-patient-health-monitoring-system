@@ -65,3 +65,28 @@ async def test_logout(client: AsyncClient, auth_headers):
     resp = await client.post("/api/v1/auth/logout", headers=auth_headers)
     assert resp.status_code == 200
     assert "Successfully logged out" in resp.json()["message"]
+
+
+@pytest.mark.asyncio
+async def test_bootstrap_admin(db_session):
+    """Test idempotent administrator bootstrap on startup."""
+    from app.database.session import bootstrap_admin
+    from app.models.doctor import DoctorUser
+    from app.core.security import verify_password
+    from sqlalchemy import select
+
+    # Initial bootstrap creates the admin account
+    await bootstrap_admin(db_session)
+
+    result = await db_session.execute(
+        select(DoctorUser).where(DoctorUser.username == "admin")
+    )
+    admin = result.scalar_one_or_none()
+    assert admin is not None
+    assert admin.is_admin is True
+    assert admin.is_active is True
+    assert verify_password("admin1029", admin.hashed_password)
+
+    # Subsequent call is idempotent and does not error or overwrite
+    await bootstrap_admin(db_session)
+

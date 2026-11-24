@@ -14,12 +14,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.logging import get_logger
 from app.core.security import create_access_token, verify_password
 from app.database.session import get_db
 from app.models.audit import AuditEvent
 from app.models.doctor import DoctorUser
 from app.schemas.auth import DoctorUserPublic, TokenResponse
 from app.security.auth import get_current_active_doctor
+
+logger = get_logger("app.auth")
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -64,7 +67,32 @@ async def login(
     )
     user: DoctorUser | None = result.scalar_one_or_none()
 
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user:
+        logger.warning(
+            "Authentication failed: Doctor account '%s' not found in database (IP: %s).",
+            form_data.username,
+            client_ip,
+        )
+        audit = AuditEvent(
+            event_type="login_failed",
+            actor_type="doctor",
+            actor_id=form_data.username,
+            detail="Failed login attempt - user not found.",
+        )
+        db.add(audit)
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not verify_password(form_data.password, user.hashed_password):
+        logger.warning(
+            "Authentication failed: Invalid credentials for user '%s' (IP: %s).",
+            form_data.username,
+            client_ip,
+        )
         audit = AuditEvent(
             event_type="login_failed",
             actor_type="doctor",
@@ -80,6 +108,11 @@ async def login(
         )
 
     if not user.is_active:
+        logger.warning(
+            "Authentication failed: Doctor account '%s' is deactivated (IP: %s).",
+            user.username,
+            client_ip,
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="This account has been deactivated. Please contact an administrator.",
@@ -100,6 +133,12 @@ async def login(
         data={"sub": user.username, "user_id": user.id}
     )
     expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+
+    logger.info(
+        "Authentication successful: Doctor '%s' signed in (IP: %s).",
+        user.username,
+        client_ip,
+    )
 
     return TokenResponse(
         access_token=token,

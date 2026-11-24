@@ -92,3 +92,70 @@ async def init_db() -> None:
         await conn.run_sync(Base.metadata.create_all)
 
     log.info("Database tables created / verified.")
+
+
+# ---------------------------------------------------------------------------
+# Initial Admin Account Bootstrap
+# ---------------------------------------------------------------------------
+async def bootstrap_admin(db: AsyncSession | None = None) -> None:
+    """
+    Idempotently provision the initial administrator account on startup.
+    Runs only if the administrator account does not already exist.
+    Never overwrites an existing administrator's password automatically on restart.
+    Safe against concurrent startup via try/except IntegrityError.
+    """
+    if not settings.ADMIN_USERNAME or not settings.ADMIN_PASSWORD:
+        log.info("ADMIN_USERNAME or ADMIN_PASSWORD not configured. Skipping admin bootstrap.")
+        return
+
+    from sqlalchemy import select
+    from sqlalchemy.exc import IntegrityError
+    from app.core.security import hash_password
+    from app.models.doctor import DoctorUser
+
+    async def _execute_bootstrap(session: AsyncSession) -> None:
+        try:
+            result = await session.execute(
+                select(DoctorUser).where(DoctorUser.username == settings.ADMIN_USERNAME)
+            )
+            existing = result.scalar_one_or_none()
+            if existing is not None:
+                log.info(
+                    "Administrator account '%s' already exists. Skipping bootstrap.",
+                    settings.ADMIN_USERNAME,
+                )
+                return
+
+            admin = DoctorUser(
+                username=settings.ADMIN_USERNAME,
+                hashed_password=hash_password(settings.ADMIN_PASSWORD),
+                full_name="System Administrator",
+                email=f"{settings.ADMIN_USERNAME}@health-monitor.local",
+                is_active=True,
+                is_admin=True,
+            )
+            session.add(admin)
+            await session.commit()
+            log.info(
+                "Initial administrator account '%s' created successfully.",
+                settings.ADMIN_USERNAME,
+            )
+        except IntegrityError:
+            await session.rollback()
+            log.info(
+                "Administrator account '%s' was already created concurrently.",
+                settings.ADMIN_USERNAME,
+            )
+        except Exception as exc:
+            await session.rollback()
+            log.error(
+                "Failed to bootstrap administrator account: %s",
+                type(exc).__name__,
+            )
+
+    if db is not None:
+        await _execute_bootstrap(db)
+    else:
+        async with AsyncSessionLocal() as session:
+            await _execute_bootstrap(session)
+
