@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased font-sans transition-colors duration-200;
+  }
+
+  html.dark {
+    @apply bg-navy-950 text-slate-100;
+    color-scheme: dark;
+  }
+
+  html.light {
+    @apply bg-slate-50 text-slate-900;
+    color-scheme: light;
+  }
+  
+  * {
+    @apply box-border;
+  }
+
+  /* Custom Sleek Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  html.dark ::-webkit-scrollbar-track {
+    @apply bg-navy-950;
+  }
+  html.dark ::-webkit-scrollbar-thumb {
+    @apply bg-charcoal-700/80 rounded-full hover:bg-charcoal-600;
+  }
+
+  html.light ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+  html.light ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full hover:bg-slate-400;
+  }
+}
+
+@layer components {
+  /* Surfaces & Containers */
+  .card {
+    @apply rounded-xl p-5 transition-all duration-200;
+  }
+  html.dark .card {
+    @apply bg-navy-900/90 border border-charcoal-700/60 shadow-card-dark text-slate-100;
+  }
+  html.light .card {
+    @apply bg-white border border-slate-200/90 shadow-card-light text-slate-800;
+  }
+
+  .card-sm {
+    @apply rounded-lg p-3.5 transition-all duration-200;
+  }
+  html.dark .card-sm {
+    @apply bg-navy-900 border border-charcoal-700/70 text-slate-100;
+  }
+  html.light .card-sm {
+    @apply bg-white border border-slate-200 text-slate-800 shadow-sm;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm hover:shadow transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none text-sm;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 rounded-lg border text-sm transition-all duration-150 disabled:opacity-50 select-none;
+  }
+  html.dark .btn-secondary {
+    @apply bg-charcoal-800/90 hover:bg-charcoal-700 border-charcoal-700 text-slate-200 hover:text-white;
+  }
+  html.light .btn-secondary {
+    @apply bg-white hover:bg-slate-50 border-slate-300 text-slate-700 hover:text-slate-900 shadow-sm;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors duration-150 text-sm select-none;
+  }
+
+  /* Inputs & Form Elements */
+  .input {
+    @apply rounded-lg px-3.5 py-2 w-full text-sm font-sans transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-500/30;
+  }
+  html.dark .input {
+    @apply bg-navy-950/90 border border-charcoal-700 text-slate-100 placeholder-slate-500 focus:border-cyan-500;
+  }
+  html.light .input {
+    @apply bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 shadow-sm;
+  }
+
+  .label {
+    @apply text-xs font-semibold uppercase tracking-wider mb-1.5 block;
+  }
+  html.dark .label {
+    @apply text-slate-400;
+  }
+  html.light .label {
+    @apply text-slate-600;
+  }
+
+  /* Status Badges */
+  .badge-green {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  html.dark .badge-green {
+    @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/30;
+  }
+  html.light .badge-green {
+    @apply bg-emerald-50 text-emerald-700 border border-emerald-200;
+  }
+
+  .badge-red {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  html.dark .badge-red {
+    @apply bg-rose-500/15 text-rose-400 border border-rose-500/30;
+  }
+  html.light .badge-red {
+    @apply bg-rose-50 text-rose-700 border border-rose-200;
+  }
+
+  .badge-yellow {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  html.dark .badge-yellow {
+    @apply bg-amber-500/15 text-amber-400 border border-amber-500/30;
+  }
+  html.light .badge-yellow {
+    @apply bg-amber-50 text-amber-700 border border-amber-200;
+  }
+
+  .badge-blue {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  html.dark .badge-blue {
+    @apply bg-cyan-500/15 text-cyan-400 border border-cyan-500/30;
+  }
+  html.light .badge-blue {
+    @apply bg-sky-50 text-sky-700 border border-sky-200;
+  }
+
+  .badge-gray {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  html.dark .badge-gray {
+    @apply bg-charcoal-800 text-slate-400 border border-charcoal-700;
+  }
+  html.light .badge-gray {
+    @apply bg-slate-100 text-slate-600 border border-slate-200;
+  }
+
+  /* Stat Cards */
+  .stat-card {
+    @apply card flex flex-col justify-between;
+  }
+
+  /* Titles & Table Rows */
+  .section-title {
+    @apply font-semibold text-base mb-3 flex items-center gap-2;
+  }
+  html.dark .section-title {
+    @apply text-slate-100;
+  }
+  html.light .section-title {
+    @apply text-slate-800;
+  }
+
+  .table-row {
+    @apply border-b transition-colors duration-150;
+  }
+  html.dark .table-row {
+    @apply border-charcoal-800/80 hover:bg-charcoal-850/50;
+  }
+  html.light .table-row {
+    @apply border-slate-100 hover:bg-slate-50/80;
+  }
+
+  /* Tabular Clinical Numbers */
+  .clinical-value {
+    font-variant-numeric: tabular-nums;
+    @apply font-mono font-medium tracking-tight;
+  }
+
+  /* ECG Medical Paper Grid Simulation */
+  .ecg-paper-grid {
+    background-color: #fff9f9;
+    background-image: 
+      linear-gradient(to right, rgba(239, 68, 68, 0.15) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(239, 68, 68, 0.15) 1px, transparent 1px),
+      linear-gradient(to right, rgba(239, 68, 68, 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(239, 68, 68, 0.35) 1px, transparent 1px);
+    background-size: 5px 5px, 5px 5px, 25px 25px, 25px 25px;
+  }
+
+  .ecg-dark-grid {
+    background-color: #050811;
+    background-image: 
+      linear-gradient(to right, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+      linear-gradient(to right, rgba(14, 165, 233, 0.20) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(14, 165, 233, 0.20) 1px, transparent 1px);
+    background-size: 5px 5px, 5px 5px, 25px 25px, 25px 25px;
+  }
+}

@@ -1,0 +1,59 @@
+===============================================================================
+  REMOTE PATIENT HEALTH MONITORING SYSTEM - QUICK START GUIDE
+  University Engineering Prototype
+===============================================================================
+
+HOW TO START THE SYSTEM (EASY DOUBLE-CLICK METHOD):
+
+1. START ALL SERVICES AT ONCE:
+   - Double-click "START_ALL.bat" located in this "hardware" folder.
+   - It will automatically launch 3 separate Command Prompt windows:
+       Window 1 (Cyan):   FastAPI Backend Server (:8000)
+       Window 2 (Green):  React Doctor Dashboard (:5173)
+       Window 3 (Yellow): ngrok Public HTTP Tunnel (:8000)
+   - It will also automatically open your browser to http://localhost:5173 !
+
+2. WHY YOU COULD NOT ACCESS "LOCALHOST" PREVIOUSLY:
+   - "localhost:5173" has NOT changed!
+   - The reason you could not access it earlier was simply that the background 
+     servers (Node Vite & Python Uvicorn) were stopped.
+   - Once you double-click START_ALL.bat, the servers start listening on port 5173 
+     and port 8000, and your dashboard becomes immediately accessible.
+
+3. ACCESS THE DOCTOR DASHBOARD:
+   - Open your web browser (Chrome, Edge, Firefox) to either:
+       Primary:   http://localhost:5173
+       Fallback:  http://127.0.0.1:5173
+   - Log in with the administrator credentials:
+       Username: admin
+       Password: admin123
+
+4. KEEP TERMINAL WINDOWS OPEN:
+   - Keep all three terminal windows open while you are monitoring patients,
+     authoring prescriptions, viewing ECG waveforms, or running Wokwi simulations.
+   - You can minimize them to keep your desktop clean.
+
+5. TO STOP EVERYTHING:
+   - Simply close the three Command Prompt windows (Backend, Frontend, ngrok).
+
+6. WOKWI ESP32 SIMULATION / PHYSICAL HARDWARE:
+   - Wokwi simulation runs in your web browser separately.
+   - When running Wokwi or a real cellular SIM800L ESP32 node:
+       a. Look at the yellow "ngrok Tunnel" window.
+       b. Find the "Forwarding" line, e.g.:
+            Forwarding  https://abc1-23-45-67.ngrok-free.app -> http://localhost:8000
+       c. Copy that domain (e.g. "abc1-23-45-67.ngrok-free.app").
+       d. In your Wokwi / ESP32 firmware sketch, set:
+            #define SERVER_HOST "abc1-23-45-67.ngrok-free.app"
+            #define SERVER_PORT 80
+            #define DEVICE_API_KEY "rhm_80eedcd9eedb1f43_EnZ6ej9kDYl23pm0qLtnBqvpcdZgphdovZ3hSHHYgVc"
+       e. Click the green "Play" button in Wokwi to start streaming ECG data.
+       f. Switch back to your dashboard (http://localhost:5173/recordings)
+          to see your live telemetry batches and ECG waveforms!
+
+-------------------------------------------------------------------------------
+INDIVIDUAL LAUNCHERS (FOR ADVANCED USE):
+- START_BACKEND.bat  : Starts only the FastAPI backend on port 8000.
+- START_FRONTEND.bat : Starts only the React dashboard on port 5173.
+- START_NGROK.bat    : Starts only the ngrok tunnel forwarding to port 8000.
+===============================================================================
