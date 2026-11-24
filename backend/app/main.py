@@ -130,14 +130,16 @@ async def validation_exception_handler(
 app.include_router(api_router)
 
 
-# Health check endpoint
+# Health check endpoints
+@app.get("/health", tags=["System"])
 @app.get("/api/v1/health", tags=["System"])
 async def health_check() -> dict:
-    """Public health-check endpoint for monitoring probes."""
+    """Public health-check endpoint for cloud monitoring probes (Render, UptimeRobot, etc.)."""
+    db_type = "sqlite" if settings.DATABASE_URL.startswith("sqlite") else "postgresql"
     return {
         "status": "healthy",
         "version": settings.APP_VERSION,
-        "database": "sqlite",
+        "database": db_type,
         "service": "remote-patient-health-monitor",
         "disclaimer": "Educational research prototype only.",
     }
