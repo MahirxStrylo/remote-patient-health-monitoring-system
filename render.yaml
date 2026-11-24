@@ -32,17 +32,19 @@ services:
       - key: MAX_ECG_SAMPLES_PER_BATCH
         value: "10000"
 
-  # 2. React + Vite Frontend Dashboard Static Site
-  - type: web
-    name: remote-health-frontend
-    runtime: static
-    rootDir: frontend
-    buildCommand: "npm install && npm run build"
-    staticPublishPath: dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_BASE_URL
-        sync: false
+  # Note: The React frontend will be deployed separately on Vercel once the
+  # backend is live and its assigned URL is obtained.
+  # (Render static site definition preserved below for reference if needed later)
+  # - type: web
+  #   name: remote-health-frontend
+  #   runtime: static
+  #   rootDir: frontend
+  #   buildCommand: "npm install && npm run build"
+  #   staticPublishPath: dist
+  #   routes:
+  #     - type: rewrite
+  #       source: /*
+  #       destination: /index.html
+  #   envVars:
+  #     - key: VITE_API_BASE_URL
+  #       sync: false
