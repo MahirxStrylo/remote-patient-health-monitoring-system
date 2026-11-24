@@ -9,7 +9,24 @@ import type {
   Prescription, PrescriptionCreate
 } from '../types';
 
-const BASE_URL = '/api/v1';
+/**
+ * Resolve the API base URL.
+ * Supports:
+ * - Full URLs configured via VITE_API_BASE_URL (e.g. https://remote-health-backend-4np8.onrender.com or with /api/v1)
+ * - Automatic trailing slash removal
+ * - Guarantees /api/v1 suffix is present without duplication
+ * - Fallback to /api/v1 for local dev (proxies to http://localhost:8000 via Vite dev server)
+ */
+export const getBaseUrl = (): string => {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+  if (!envUrl) {
+    return '/api/v1';
+  }
+  const clean = envUrl.replace(/\/+$/, '');
+  return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
+};
+
+export const BASE_URL = getBaseUrl();
 
 class ApiService {
   private client: AxiosInstance;
@@ -195,6 +212,10 @@ class ApiService {
   async getHealth(): Promise<{ status: string; version: string; database: string }> {
     const res = await this.client.get('/health');
     return res.data;
+  }
+
+  getBaseUrl(): string {
+    return BASE_URL;
   }
 }
 
